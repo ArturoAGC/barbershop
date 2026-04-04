@@ -21,20 +21,21 @@ BarberBook permite a los clientes de una barbería reservar citas en línea de f
 - **Deploy:** Railway
 
 ## 📁 Estructura del proyecto
-
+```
 app/
 ├── Http/
 │   ├── Controllers/
-│   │   ├── Admin/          ← Panel de administración
-│   │   ├── Client/         ← Portal del cliente
-│   │   └── AuthController  ← Autenticación
+│   │   ├── Admin/           ← Panel de administración
+│   │   ├── Client/          ← Portal del cliente
+│   │   └── AuthController   ← Autenticación
 │   └── Middleware/
-│       └── IsAdmin.php     ← Control de acceso por rol
+│       └── IsAdmin.php      ← Control de acceso por rol
 └── Models/
-├── User.php
-├── Service.php
-├── Barber.php
-└── Reservation.php
+    ├── User.php
+    ├── Service.php
+    ├── Barber.php
+    └── Reservation.php
+```
 
 
 ## 🌿 Ramas del proyecto
