@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ArturoAGC/barbershop/main/public/images/logo_binaryx.png" alt="BarberBook Logo" width="400">
+</p>
 # ✂ BarberBook
 
 Sistema web de reservas para barberías.
