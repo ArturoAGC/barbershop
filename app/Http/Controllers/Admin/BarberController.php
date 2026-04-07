@@ -3,63 +3,72 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Barber;
 use Illuminate\Http\Request;
 
 class BarberController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $barbers = Barber::orderBy('name')->paginate(10);
+        return view('admin.barbers.index', compact('barbers'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('admin.barbers.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name'      => 'required|string|max:255',
+            'specialty' => 'nullable|string|max:255',
+            'bio'       => 'nullable|string',
+            'is_active' => 'boolean',
+        ]);
+
+        Barber::create([
+            'name'      => $request->name,
+            'specialty' => $request->specialty,
+            'bio'       => $request->bio,
+            'is_active' => $request->boolean('is_active', true),
+        ]);
+
+        return redirect()->route('admin.barbers.index')
+                         ->with('success', 'Estilista creado correctamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Barber $barber)
     {
-        //
+        return view('admin.barbers.edit', compact('barber'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Barber $barber)
     {
-        //
+        $request->validate([
+            'name'      => 'required|string|max:255',
+            'specialty' => 'nullable|string|max:255',
+            'bio'       => 'nullable|string',
+            'is_active' => 'boolean',
+        ]);
+
+        $barber->update([
+            'name'      => $request->name,
+            'specialty' => $request->specialty,
+            'bio'       => $request->bio,
+            'is_active' => $request->boolean('is_active', false),
+        ]);
+
+        return redirect()->route('admin.barbers.index')
+                         ->with('success', 'Estilista actualizado correctamente.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Barber $barber)
     {
-        //
-    }
+        $barber->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('admin.barbers.index')
+                         ->with('success', 'Estilista eliminado correctamente.');
     }
 }
