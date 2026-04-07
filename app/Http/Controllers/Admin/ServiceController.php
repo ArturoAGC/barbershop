@@ -3,63 +3,76 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Service;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $services = Service::orderBy('name')->paginate(10);
+        return view('admin.services.index', compact('services'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('admin.services.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name'             => 'required|string|max:255',
+            'description'      => 'nullable|string',
+            'price'            => 'required|numeric|min:0',
+            'duration_minutes' => 'required|integer|min:1',
+            'is_active'        => 'boolean',
+        ]);
+
+        Service::create([
+            'name'             => $request->name,
+            'description'      => $request->description,
+            'price'            => $request->price,
+            'duration_minutes' => $request->duration_minutes,
+            'is_active'        => $request->boolean('is_active', true),
+        ]);
+
+        return redirect()->route('admin.services.index')
+                         ->with('success', 'Servicio creado correctamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Service $service)
     {
-        //
+        return view('admin.services.edit', compact('service'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Service $service)
     {
-        //
+        $request->validate([
+            'name'             => 'required|string|max:255',
+            'description'      => 'nullable|string',
+            'price'            => 'required|numeric|min:0',
+            'duration_minutes' => 'required|integer|min:1',
+            'is_active'        => 'boolean',
+        ]);
+
+        $service->update([
+            'name'             => $request->name,
+            'description'      => $request->description,
+            'price'            => $request->price,
+            'duration_minutes' => $request->duration_minutes,
+            'is_active'        => $request->boolean('is_active', false),
+        ]);
+
+        return redirect()->route('admin.services.index')
+                         ->with('success', 'Servicio actualizado correctamente.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Service $service)
     {
-        //
-    }
+        $service->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('admin.services.index')
+                         ->with('success', 'Servicio eliminado correctamente.');
     }
 }
