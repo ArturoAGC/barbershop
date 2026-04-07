@@ -8,7 +8,7 @@ use App\Http\Controllers\Client\BookingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/login');
 });
 
 // Rutas de autenticación
@@ -38,8 +38,10 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
         return view('client.dashboard');
     })->name('dashboard');
 
-    Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
+    Route::get('/available-slots', [BookingController::class, 'availableSlots'])->name('available-slots');
+
+    Route::get('/booking', [BookingController::class, 'index'])->name('booking');
     Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
-    Route::get('/my-reservations', [BookingController::class, 'myReservations'])->name('reservations');
+    Route::get('/my-reservations', [BookingController::class, 'myReservations'])->name('my-reservations');
     Route::delete('/my-reservations/{reservation}', [BookingController::class, 'cancel'])->name('reservations.cancel');
 });
