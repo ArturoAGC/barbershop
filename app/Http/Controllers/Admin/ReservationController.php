@@ -1,65 +1,43 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
 
 class ReservationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $query = Reservation::with(['user', 'service', 'barber'])->latest();
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('date')) {
+            $query->where('reservation_date', $request->date);
+        }
+
+        $reservations = $query->paginate(10);
+
+        return view('admin.reservations.index', compact('reservations'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function update(Request $request, Reservation $reservation)
     {
-        //
+        $request->validate([
+            'status' => 'required|in:pending,confirmed,cancelled',
+        ]);
+
+        $reservation->update(['status' => $request->status]);
+
+        return back()->with('success', 'Reserva actualizada correctamente.');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function destroy(Reservation $reservation)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $reservation->delete();
+        return back()->with('success', 'Reserva eliminada correctamente.');
     }
 }
