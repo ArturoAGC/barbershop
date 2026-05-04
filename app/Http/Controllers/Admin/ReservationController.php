@@ -1,9 +1,13 @@
 <?php
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
+
+use App\Mail\ReservaConfirmada;
+use Illuminate\Support\Facades\Mail;
 
 class ReservationController extends Controller
 {
@@ -31,6 +35,17 @@ class ReservationController extends Controller
         ]);
 
         $reservation->update(['status' => $request->status]);
+
+        if ($request->status === 'confirmed') {
+            $reservation->load('user');
+            
+            Log::info('Intentando enviar email a: ' . $reservation->user->email);
+            
+            Mail::to($reservation->user->email)
+                ->send(new ReservaConfirmada($reservation));
+                
+            Log::info('Email enviado correctamente');
+        }
 
         return back()->with('success', 'Reserva actualizada correctamente.');
     }

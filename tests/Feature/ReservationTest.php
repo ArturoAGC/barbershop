@@ -1,11 +1,13 @@
 <?php
 namespace Tests\Feature;
 
+use App\Mail\ReservaConfirmada;
 use App\Models\Barber;
 use App\Models\Reservation;
 use App\Models\Service;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class ReservationTest extends TestCase
@@ -104,5 +106,22 @@ class ReservationTest extends TestCase
             'id'     => $reservation->id,
             'status' => 'confirmed',
         ]);
+    }
+
+    public function test_email_enviado_al_confirmar_reserva(): void
+    {
+        Mail::fake();
+
+        $admin = User::factory()->create(['role' => 'admin']);
+        $reservation = Reservation::factory()->create(['status' => 'pending']);
+
+        $this->actingAs($admin)
+            ->patch("/admin/reservations/{$reservation->id}", [
+                'status' => 'confirmed'
+            ]);
+
+        Mail::assertSent(ReservaConfirmada::class, function ($mail) use ($reservation) {
+            return $mail->hasTo($reservation->user->email);
+        });
     }
 }
