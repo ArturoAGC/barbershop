@@ -69,7 +69,7 @@ class BookingController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        $reservations = Reservation::with(['service', 'barber'])
+        $reservations = Reservation::with(['service', 'barber', 'payment'])
             ->where('user_id', $user->id)
             ->orderByDesc('reservation_date')
             ->orderByDesc('reservation_time')
