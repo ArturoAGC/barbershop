@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Barber;
 use App\Models\Reservation;
 use App\Models\Service;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -46,8 +47,8 @@ class BookingController extends Controller
                 ->with('error', 'Ese horario ya no está disponible. Elige otro.');
         }
 
-        /** @var User $user */
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
         Reservation::create([
             'user_id'          => $user->id,
@@ -65,8 +66,8 @@ class BookingController extends Controller
 
     public function myReservations()
     {
-        /** @var User $user */
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
         $reservations = Reservation::with(['service', 'barber'])
             ->where('user_id', $user->id)
@@ -79,7 +80,8 @@ class BookingController extends Controller
 
     public function cancel(Reservation $reservation)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         assert($user instanceof User);
 
         if ($reservation->user_id !== $user->id) {

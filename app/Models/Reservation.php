@@ -32,4 +32,13 @@ class Reservation extends Model
     {
         return $this->belongsTo(Barber::class);
     }
+    public function payment()
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    public function isPaid(): bool
+    {
+        return $this->payment?->isApproved() ?? false;
+    }
 }

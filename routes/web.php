@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Admin\BarberController;
 use App\Http\Controllers\Admin\ReservationController;
 use App\Http\Controllers\Admin\ServiceController;
@@ -20,6 +20,10 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+// Webhook de Mercado Pago: lo llaman los servidores de Mercado Pago, no el navegador.
+// Va fuera de los grupos de 'auth' porque no hay ningún usuario logueado en esta llamada.
+Route::post('/webhooks/mercadopago', [PaymentController::class, 'webhook'])->name('webhooks.mercadopago');
 
 // Rutas del panel de administración
 Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
@@ -44,4 +48,7 @@ Route::middleware(['auth'])->prefix('client')->name('client.')->group(function (
     Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
     Route::get('/my-reservations', [BookingController::class, 'myReservations'])->name('my-reservations');
     Route::delete('/my-reservations/{reservation}', [BookingController::class, 'cancel'])->name('reservations.cancel');
+
+    Route::post('/reservations/{reservation}/pay', [PaymentController::class, 'checkout'])->name('reservations.pay');
+    Route::get('/payments/return', [PaymentController::class, 'returnFromCheckout'])->name('payments.return');
 });
